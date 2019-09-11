@@ -1,0 +1,20 @@
+[
+  {
+    "name": "node-simple",
+    "image": "node-simple",
+    "essential": true,
+    "portMappings": [
+      {
+        "hostPort": 0,
+        "containerPort": 80
+      }
+    ],
+    "memory": 128,
+    "environment": [
+      {
+        "name": "PORT",
+        "value": "80"
+      }
+    ]
+  }
+]
