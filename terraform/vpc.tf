@@ -29,7 +29,7 @@ resource "aws_subnet" "node_simple_public2" {
   cidr_block        = "10.0.2.0/24"
   availability_zone = "${var.availability_zones[1]}"
   tags = {
-    Name = "node-simple-public-subnet"
+    Name = "node-simple-public-subnet2"
   }
 }
 
@@ -37,9 +37,18 @@ resource "aws_subnet" "node_simple_public2" {
 resource "aws_subnet" "node_simple_private" {
   vpc_id            = "${aws_vpc.node_simple_vpc.id}"
   cidr_block        = "10.0.3.0/24"
-  availability_zone = "${var.availability_zones[2]}"
+  availability_zone = "${var.availability_zones[0]}"
   tags = {
     Name = "node-simple-private-subnet"
+  }
+}
+
+resource "aws_subnet" "node_simple_private2" {
+  vpc_id            = "${aws_vpc.node_simple_vpc.id}"
+  cidr_block        = "10.0.4.0/24"
+  availability_zone = "${var.availability_zones[1]}"
+  tags = {
+    Name = "node-simple-private-subnet2"
   }
 }
 
@@ -61,6 +70,11 @@ resource "aws_route_table_association" "node_simple_rt_assn" {
   route_table_id = "${aws_route_table.node_simple_rt.id}"
 }
 
+resource "aws_route_table_association" "node_simple_rt_assn2" {
+  subnet_id      = "${aws_subnet.node_simple_public2.id}"
+  route_table_id = "${aws_route_table.node_simple_rt.id}"
+}
+
 # ECS Instance Security group
 resource "aws_security_group" "node_simple_public_sg" {
   name        = "node-simple-public-sg"
@@ -71,6 +85,14 @@ resource "aws_security_group" "node_simple_public_sg" {
     from_port = 80
     to_port   = 80
     protocol  = "tcp"
+    cidr_blocks = [
+      "0.0.0.0/0"
+    ]
+  }
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = [
       "0.0.0.0/0"
     ]
@@ -91,6 +113,14 @@ resource "aws_security_group" "node_simple_private_sg" {
     protocol  = "tcp"
     security_groups = [
       "${aws_security_group.node_simple_public_sg.id}"
+    ]
+  }
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = [
+      "0.0.0.0/0"
     ]
   }
   tags = {
