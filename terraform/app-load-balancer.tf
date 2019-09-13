@@ -1,42 +1,44 @@
-resource "aws_alb" "node_simple_alb" {
-  name            = "node-simple-alb"
-  security_groups = ["${aws_security_group.node_simple_public_sg.id}"]
-  subnets         = ["${aws_subnet.node_simple_public.id}", "${aws_subnet.node_simple_public2.id}"]
+resource "aws_alb" "ecs_alb" {
+  name            = "${var.load_balancer["name"]}"
+  security_groups = ["${aws_security_group.public_sg.id}"]
+  subnets         = ["${aws_subnet.public_subnet_1.id}", "${aws_subnet.public_subnet_2.id}"]
+  enable_http2    = "true"
+  idle_timeout    = "${var.load_balancer["idle_timeout"]}"
   tags = {
-    Name = "node-simple-alb"
+    Name = "${var.load_balancer["name"]}"
   }
 }
 
-resource "aws_alb_target_group" "node_simple_alb_tg" {
-  name     = "node-simple-alb-tg"
-  port     = "80"
-  protocol = "HTTP"
-  vpc_id   = "${aws_vpc.node_simple_vpc.id}"
+resource "aws_alb_target_group" "target_group" {
+  name     = "${var.target_group["name"]}"
+  port     = "${var.target_group["port"]}"
+  protocol = "${var.target_group["protocol"]}"
+  vpc_id   = "${aws_vpc.node_vpc.id}"
   health_check {
-    healthy_threshold   = "5"
-    unhealthy_threshold = "4"
-    interval            = "60"
-    matcher             = "200"
-    path                = "/health-check"
-    port                = "traffic-port"
-    protocol            = "HTTP"
-    timeout             = "10"
+    healthy_threshold   = "${var.health_check["healthy_threshold"]}"
+    unhealthy_threshold = "${var.health_check["unhealthy_threshold"]}"
+    interval            = "${var.health_check["interval"]}"
+    matcher             = "${var.health_check["matcher"]}"
+    path                = "${var.health_check["path"]}"
+    port                = "${var.health_check["port"]}"
+    protocol            = "${var.health_check["protocol"]}"
+    timeout             = "${var.health_check["timeout"]}"
   }
   tags = {
-    Name = "node-simple-alb-tg"
+    Name = "${var.target_group["name"]}"
   }
   depends_on = [
-    "aws_alb.node_simple_alb",
+    "aws_alb.ecs_alb",
   ]
 }
 
 resource "aws_alb_listener" "alb-listener" {
-  load_balancer_arn = "${aws_alb.node_simple_alb.arn}"
-  port              = "80"
-  protocol          = "HTTP"
+  load_balancer_arn = "${aws_alb.ecs_alb.arn}"
+  port              = "${var.load_balancer["port"]}"
+  protocol          = "${var.load_balancer["protocol"]}"
 
   default_action {
-    target_group_arn = "${aws_alb_target_group.node_simple_alb_tg.arn}"
-    type             = "forward"
+    target_group_arn = "${aws_alb_target_group.target_group.arn}"
+    type             = "${var.load_balancer["type"]}"
   }
 }

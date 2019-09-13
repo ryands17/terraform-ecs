@@ -1,15 +1,8 @@
 # configuration
 provider "aws" {
-  region = "${var.aws_region}"
-}
-
-# main credentials for AWS connection
-variable "aws_access_key_id" {
-  description = "AWS access key"
-}
-
-variable "aws_secret_access_key" {
-  description = "AWS secret access key"
+  profile = "default"
+  version = ">= 2.1"
+  region  = "${var.aws_region}"
 }
 
 variable "aws_region" {
@@ -20,26 +13,40 @@ variable "availability_zones" {
   description = "The required AWS availability zones"
 }
 
-variable "max_instance_size" {
-  description = "Maximum no. of EC2 instances"
-  default     = 2
-}
-
-variable "min_instance_size" {
-  description = "Minimum no. of EC2 instances"
-  default     = 1
-}
-
-variable "desired_capacity" {
-  description = "The desired EC2 instances"
-  default     = 1
-}
-
 variable "ecs_cluster" {
   description = "The ECS Cluster name"
   default     = "node-simple"
 }
 
-variable "ecs_image_name" {
-  description = "The ECR image link"
+variable "vpc" {
+  description = "The specified VPC attributes along with their tags"
+}
+
+variable "launch_config" {
+  description = "The specified values to be passed to the launch configuration"
+}
+
+variable "auto_scaling" {
+  description = "Auto scaling values like instance capacity"
+}
+
+variable "task_definition" {
+  description = "All variables required for creating a task definition"
+}
+
+variable "ecs_service" {
+  description = "The ECS service required parameters"
+}
+
+variable "load_balancer" {
+  description = "The parameters related to the Application Load Balancer"
+}
+
+variable "health_check" {
+  description = "Health check parameters for the Application Load Balancer"
+}
+
+
+variable "target_group" {
+  description = "The parameters related to health checks of the load balancer"
 }

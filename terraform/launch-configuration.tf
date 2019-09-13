@@ -1,21 +1,21 @@
 resource "aws_launch_configuration" "ecs_launch_configuration" {
-  name                 = "ecs-launch-configuration"
-  image_id             = "ami-0e434a58221275ed4"
-  instance_type        = "t2.micro"
-  iam_instance_profile = "${aws_iam_instance_profile.ecs-instance-profile.id}"
+  name                 = "${var.launch_config["name"]}"
+  image_id             = "${var.launch_config["image_id"]}"
+  instance_type        = "${var.launch_config["instance_type"]}"
+  iam_instance_profile = "${aws_iam_instance_profile.ecs-instance-profile.name}"
 
   root_block_device {
     volume_type           = "standard"
-    volume_size           = 30
-    delete_on_termination = true
+    volume_size           = "${var.launch_config["root_volume_size"]}"
+    delete_on_termination = "${var.launch_config["delete_on_termination"]}"
   }
 
   lifecycle {
     create_before_destroy = true
   }
 
-  security_groups             = ["${aws_security_group.node_simple_private_sg.id}"]
-  associate_public_ip_address = "false"
+  security_groups             = ["${aws_security_group.private_sg.id}"]
+  associate_public_ip_address = "${var.launch_config["public_ip"]}"
 
   user_data = <<EOF
               #!/bin/bash
