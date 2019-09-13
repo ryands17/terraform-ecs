@@ -1,6 +1,8 @@
+# code
 node_modules
 dist
 
+# terraform
 .terraform/
 *.tfvars
 *.tfstate*
