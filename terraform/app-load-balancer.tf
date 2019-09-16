@@ -9,6 +9,11 @@ resource "aws_alb" "ecs_alb" {
   }
 }
 
+output "api_url" {
+  value       = "${aws_alb.ecs_alb.dns_name}"
+  description = "The load balancer DNS where API's will be called from"
+}
+
 resource "aws_alb_target_group" "target_group" {
   name     = "${var.target_group["name"]}"
   port     = "${var.target_group["port"]}"
@@ -23,6 +28,11 @@ resource "aws_alb_target_group" "target_group" {
     port                = "${var.health_check["port"]}"
     protocol            = "${var.health_check["protocol"]}"
     timeout             = "${var.health_check["timeout"]}"
+  }
+  stickiness = {
+    enabled         = true
+    type            = "lb_cookie"
+    cookie_duration = 86400
   }
   tags = {
     Name = "${var.target_group["name"]}"

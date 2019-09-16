@@ -117,7 +117,7 @@ resource "aws_route_table_association" "public_rt_assn_2" {
 
 # ECS Instance Security group
 resource "aws_security_group" "public_sg" {
-  name        = "${var.vpc["public_security_group_name"]}"
+  name        = "node-simple-public-sg"
   description = "Open port 80 in this group for ALB"
   vpc_id      = "${aws_vpc.node_vpc.id}"
   # add rules ingress(inbound) and egress(outbound)
@@ -143,7 +143,7 @@ resource "aws_security_group" "public_sg" {
 }
 
 resource "aws_security_group" "private_sg" {
-  name        = "${var.vpc["private_security_group_name"]}"
+  name        = "node-simple-private-sg"
   description = "Assign this SG to the EC2 instances"
   vpc_id      = "${aws_vpc.node_vpc.id}"
   # add rules ingress(inbound) and egress(outbound)
