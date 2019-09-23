@@ -46,7 +46,6 @@ variable "health_check" {
   description = "Health check parameters for the Application Load Balancer"
 }
 
-
 variable "target_group" {
   description = "The parameters related to health checks of the load balancer"
 }
